@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostel Finder</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #2c3e50, #34495e);
+            color: #ecf0f1;
+        }
+
+        .welcome-container,
+        .login-container,
+        .city-selection,
+        .user-options,
+        .hostel-results {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            border-radius: 12px;
+            width: 350px;
+            box-sizing: border-box;
+            background-color: rgba(63, 81, 181, 0.85);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            margin: 20px;
+            border: 1px solid rgba(224, 247, 250, 0.2);
+        }
+
+        .welcome-container {
+            display: flex;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hostel-results {
+            width: 600px;
+        }
+
+        .login-container h2,
+        .city-selection h2,
+        .user-options h2 {
+            color: #00bcd4;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .login-container input,
+        .login-container button,
+        .city-selection select,
+        .user-options select,
+        .user-options button {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            border: 1px solid rgba(224, 247, 250, 0.3);
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: rgba(25, 118, 210, 0.1);
+            color: #e0f7fa;
+        }
+
+        .login-container input::placeholder {
+            color: rgba(224, 247, 250, 0.7);
+        }
+
+        .login-container input:focus,
+        .city-selection select:focus,
+        .user-options select:focus {
+            border-color: #00bcd4;
+            outline: none;
+        }
+
+        .login-container button,
+        .city-selection button,
+        .user-options button,
+        .navigation-bar button {
+            background: linear-gradient(to right, #00bcd4, #009688);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.4s ease, transform 0.2s ease;
+            border-radius: 6px;
+            padding: 14px;
+            font-size: 16px;
+        }
+
+        .login-container button:hover,
+        .city-selection button:hover,
+        .user-options button:hover,
+        .navigation-bar button:hover {
+            background: linear-gradient(to right, #009688, #00796b);
+            transform: translateY(-3px);
+        }
+
+        .navigation-bar {
+            display: none;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .navigation-bar button {
+            margin: 0 15px;
+        }
+
+        .hostel-item {
+            border: 1px solid rgba(224, 247, 250, 0.2);
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: rgba(52, 73, 94, 0.85);
+            border: 1px solid rgba(236, 240, 241, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .hostel-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .hostel-item h3 {
+            color: #00bcd4;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .hostel-item p {
+            color: #e0f7fa;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .hostel-item a {
+            color: #00bcd4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .hostel-item a:hover {
+            text-decoration: underline;
+        }
+
+        .hostel-item img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: rgba(52, 73, 94, 0.95);
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 80%;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(224, 247, 250, 0.2);
+            color: #00e676;
+            position: relative;
+            z-index: 1002;
+        }
+
+        .close {
+            color: #00e676;
+            float: right;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #00c853;
+        }
+
+        #citySelect option:not(:first-child) {
+            background: linear-gradient(to right, #e0f7fa, #b2dfdb) !important;
+            color: #333 !important;
+        }
+
+        #citySelect option:not(:first-child):hover {
+            background: linear-gradient(to right, #b2dfdb, #80cbc4) !important;
+        }
+
+        #citySelect option:checked {
+            background-color: #00bcd4 !important;
+            color: rgb(13, 1, 1) !important;
+        }
+
+        .hostel-video {
+            width: 100%;
+            max-height: 400px;
+            margin-top: 20px;
+        }
+
+        .details-button {
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.4s ease, transform 0.2s ease;
+            border-radius: 6px;
+            padding: 14px;
+            font-size: 16px;
+        }
+
+        .details-button:hover {
+            background: linear-gradient(to right, #2980b9, #1c6aa4);
+            transform: translateY(-3px);
+        }
+
+        .error-message {
+            color: #ff5252;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .register-link {
+            margin-top: 15px;
+            color: #00bcd4;
+            font-size: 0.9em;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .register-link:hover {
+            color: #009688;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <h1>Welcome to Hostel Finder</h1>
+        <button id="startLogin">Login</button>
+    </div>
+    
+    <div class="login-container">
+        <h2>Login</h2>
+        <input type="email" id="email" placeholder="Enter Email">
+        <input type="password" id="password" placeholder="Enter Password">
+        <div id="error" class="error-message"></div>
+        <button id="loginButton">Login</button>
+        <div class="register-link" id="showRegister">New user? Register here</div>
+    </div>
+    
+    <div class="city-selection">
+        <h2>Select City</h2>
+        <select id="citySelect">
+            <option value="">Select City</option>
+            <option value="Hyderabad">Hyderabad</option>
+            <option value="Bangalore">Bangalore</option>
+            <option value="Mumbai">Mumbai</option>
+            <option value="Delhi">Delhi</option>
+            <option value="Chennai">Chennai</option>
+        </select>
+        <button id="citySubmit">Submit</button>
+    </div>
+    
+    <div class="user-options">
+        <h2>Discover Your Perfect Stay</h2>
+        <label for="areaSelect">Area:</label>
+        <select id="areaSelect">
+            <option value="">All Areas</option>
+            <option value="Kukatpally">Kukatpally</option>
+            <option value="Ameerpet">Ameerpet</option>
+            <option value="Uppal">Uppal</option>
+            <option value="Jubilee Hills">Jubilee Hills</option>
+            <option value="Bachupally">Bachupally</option>
+        </select>
+        <label for="hostelTypeSelect">Hostel Type:</label>
+        <select id="hostelTypeSelect">
+            <option value="">All Types</option>
+            <option value="Boys">Boys</option>
+            <option value="Girls">Girls</option>
+            <option value="Both">Both</option>
+        </select>
+        <button id="optionsSubmit">Submit</button>
+    </div>
+    
+    <div class="hostel-results">
+        <div id="hostelList"></div>
+        <div class="navigation-bar">
+            <button id="navHome">Home</button>
+            <button id="navFavorites">Favorites</button>
+            <button id="navBackToCity">Back to City</button>
+        </div>
+    </div>
+    
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <div id="modalDetailsContent"></div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // User credentials storage - This is where you will set your email and password
+            // You can modify these values to set your desired email and password
+            const userCredentials = {
+                'hostelfinder@gmail.com': 'hostelfinder'
+            };
+            
+            // DOM elements
+            const startLoginButton = document.getElementById('startLogin');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const loginButton = document.getElementById('loginButton');
+            const errorDisplay = document.getElementById('error');
+            const showRegisterLink = document.getElementById('showRegister');
+            const welcomeContainer = document.querySelector('.welcome-container');
+            const loginContainer = document.querySelector('.login-container');
+            const citySelection = document.querySelector('.city-selection');
+            const citySelect = document.getElementById('citySelect');
+            const citySubmitButton = document.getElementById('citySubmit');
+            const userOptions = document.querySelector('.user-options');
+            const optionsSubmitButton = document.getElementById('optionsSubmit');
+            const hostelResults = document.querySelector('.hostel-results');
+            const hostelList = document.getElementById('hostelList');
+            const navigationBar = document.querySelector('.navigation-bar');
+            const navHomeButton = document.getElementById('navHome');
+            const navFavoritesButton = document.getElementById('navFavorites');
+            const navBackToCityButton = document.getElementById('navBackToCity');
+            const modal = document.getElementById('detailsModal');
+            const modalContent = document.getElementById('modalDetailsContent');
+            const closeBtn = document.querySelector('.close');
+            const modalOverlay = document.createElement('div');
+            modalOverlay.classList.add('modal-overlay');
+            document.body.appendChild(modalOverlay);
+
+            // Initialize favorites from localStorage
+            let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+            // Show welcome screen initially
+            welcomeContainer.style.display = 'flex';
+
+            // Event Listeners
+            startLoginButton.addEventListener('click', () => {
+                welcomeContainer.style.display = 'none';
+                loginContainer.style.display = 'flex';
+                loginContainer.style.alignItems = "center";
+            });
+
+            loginButton.addEventListener('click', () => {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+                
+                if (!email || !password) {
+                    errorDisplay.textContent = "Please enter both email and password";
+                    return;
+                }
+                
+                // Check if credentials match
+                if (userCredentials[email] === password) {
+                    loginContainer.style.display = 'none';
+                    citySelection.style.display = 'flex';
+                    citySelection.style.alignItems = "center";
+                    errorDisplay.textContent = "";
+                } else {
+                    errorDisplay.textContent = "Invalid email or password";
+                }
+            });
+
+            showRegisterLink.addEventListener('click', () => {
+                const email = prompt("Enter your email:");
+                if (email && email.includes('@')) {
+                    const password = prompt("Enter your password:");
+                    if (password && password.length >= 6) {
+                        userCredentials[email] = password;
+                        alert("Registration successful! You can now login.");
+                    } else {
+                        alert("Password must be at least 6 characters long.");
+                    }
+                } else {
+                    alert("Please enter a valid email address.");
+                }
+            });
+
+            citySubmitButton.addEventListener('click', () => {
+                const selectedCity = citySelect.value;
+                if (selectedCity) {
+                    citySelection.style.display = 'none';
+                    userOptions.style.display = 'flex';
+                    userOptions.style.alignItems = "center";
+                    navigationBar.style.display = 'flex';
+                } else {
+                    alert("Please select a city.");
+                }
+            });
+
+            optionsSubmitButton.addEventListener('click', () => {
+                const area = document.getElementById('areaSelect').value;
+                const hostelType = document.getElementById('hostelTypeSelect').value;
+                displayHostels(area, hostelType, '');
+
+                userOptions.style.display = 'none';
+                hostelResults.style.display = 'flex';
+                hostelResults.style.alignItems = "normal";
+                navigationBar.style.display = 'flex';
+
+                displayHostels('', '', '');
+            });
+
+            // Sample data for hostels
+            const hostelData = [
+                { name: "PVS Dreams Co Living", address: "Kukatpally Address 1", pricing: "₹5000/month", gender: "Boys", amenities: ["Wifi", "Meals", "Gym", "Laundry", "Parking"], owner: "John Doe", directions: "https://www.google.com/maps/place/Landmark+A", rules: "No smoking, quiet hours after 10 PM", ecoStay: true, reviews: [{ user: "User 1", text: "Great place!", rating: 5 }, { user: "User 2", text: "Nice and clean.", rating: 4 }, { user: "User 3", text: "Good value.", rating: 4 }, { user: "User 4", text: "Friendly staff.", rating: 5 }, { user: "User 5", text: "Recommended!", rating: 4 }], hasAC: true, meals: "Breakfast and dinner included", specialFeatures: "Rooftop garden, community events, Swimming Movies at weekend", vacancy: "Yes", paymentOptions: ["Credit Card", "UPI", "Cash"], image: "img1.jpg", video: "hostel1.mp4" },
+                { name: "Star Comfy Boys Hostel", address: "Kukatpally Address 2", pricing: "₹6000/month", gender: "Boys", amenities: ["AC", "Gym", "Wifi", "Laundry", "Security"], owner: "Jane Smith", directions: "https://www.google.com/maps/place/Landmark+B", rules: "No pets allowed, guests must register", ecoStay: false, reviews: [{ user: "User 6", text: "Comfortable stay.", rating: 4 }, { user: "User 7", text: "Good location.", rating: 5 }, { user: "User 8", text: "Clean and tidy.", rating: 4 }, { user: "User 9", text: "Decent place.", rating: 3 }, { user: "User 10", text: "Enjoyed my stay.", rating: 4 }], hasAC: true, meals: "Lunch and dinner available", specialFeatures: "24/7 security, game room, Swimming Movies at weekend", vacancy: "No", paymentOptions: ["Credit Card", "Net Banking"], image: "img2.jpg", video: "hostel2.mp4" },
+                { name: "Riona PG Mens Hostel", address: "Kukatpally Address 3", pricing: "₹4500/month", gender: "Boys", amenities: ["Wifi", "Laundry", "Meals", "Common Room", "Parking"], owner: "David Lee", directions: "https://www.google.com/maps/place/Landmark+C", rules: "Respect quiet hours, keep common areas clean", ecoStay: true, reviews: [{ user: "User 11", text: "Affordable and nice.", rating: 4 }, { user: "User 12", text: "Good facilities.", rating: 5 }, { user: "User 13", text: "Clean rooms.", rating: 4 }, { user: "User 14", text: "Friendly environment.", rating: 5 }, { user: "User 15", text: "Satisfied.", rating: 4 }], hasAC: false, meals: "Breakfast provided", specialFeatures: "Quiet study areas, library access, Swimming Movies at weekend", vacancy: "Yes", paymentOptions: ["UPI", "Cash"], image: "img3.jpg", video: "hostel3.mp4" },
+                { name: "Aryansh PG Delux Boys Hostel", address: "Kukatpally Address 4", pricing: "₹5500/month", gender: "Boys", amenities: ["Meals", "Parking", "Wifi", "AC", "Gym"], owner: "Sarah Kim", directions: "https://www.google.com/maps/place/Landmark+D", rules: "No alcohol, no loud parties", ecoStay: false, reviews: [{ user: "User 16", text: "Excellent place.", rating: 5 }, { user: "User 17", text: "Good service.", rating: 4 }, { user: "User 18", text: "Clean and well-maintained.", rating: 4 }, { user: "User 19", text: "Great value for money.", rating: 5 }, { user: "User 20", text: "Highly recommended.", rating: 4 }], hasAC: true, meals: "All meals included", specialFeatures: "Swimming pool, regular cleaning, Swimming Movies at weekend", vacancy: "Yes", paymentOptions: ["Credit Card", "UPI"], image: "img4.jpg", video: "hostel4.mp4" },
+            ];
+
+            function displayHostels(areaFilter, typeFilter, genderFilter) {
+                const hostelList = document.getElementById('hostelList');
+                hostelList.innerHTML = '';
+                let count = 0;
+
+                hostelData.forEach(hostel => {
+                    if (count >= 5) return;
+
+                    let match = true;
+                    if (areaFilter && hostel.address.toLowerCase().indexOf(areaFilter.toLowerCase()) === -1) match = false;
+                    if (typeFilter && hostel.gender !== typeFilter) match = false;
+                    if (genderFilter && hostel.gender !== genderFilter) match = false;
+
+                    if (match) {
+                        const hostelItem = document.createElement('div');
+                        hostelItem.classList.add('hostel-item');
+                        hostelItem.innerHTML = `
+                            <h3>${hostel.name}</h3>
+                            <img src="${hostel.image || 'placeholder.jpg'}" alt="${hostel.name}">
+                            <p>Address: ${hostel.address}</p>
+                            <p>Pricing: ${hostel.pricing}</p>
+                            <p>Gender: ${hostel.gender}</p>
+                            <p>AC: ${hostel.hasAC ? 'Yes' : 'No'}</p>
+                            <p>Vacancy: ${hostel.vacancy}</p>
+                            <p>Payment Options: ${hostel.paymentOptions.join(', ')}</p>
+                            <a href="${hostel.directions}" target="_blank">Directions</a>
+                            <button class="details-button">Get More Details</button>
+                            <button class="favorite-button">${favorites.includes(hostel.name) ? 'Remove from Favorites' : 'Add to Favorites'}</button>
+                        `;
+                        hostelList.appendChild(hostelItem);
+                        count++;
+                    }
+                });
+            }
+
+            function showHostelDetails(hostel) {
+                const weeklyMenu = {
+                    Monday: "Rice, Dal, Vegetable Curry",
+                    Tuesday: "Roti, Chicken Curry, Salad",
+                    Wednesday: "Biryani, Raita",
+                    Thursday: "Noodles, Manchurian",
+                    Friday: "Fish Curry, Rice",
+                    Saturday: "Special Thali",
+                    Sunday: "Brunch Buffet"
+                };
+
+                modalContent.innerHTML = `
+                    <h3>${hostel.name}</h3>
+                    <p><strong>Address:</strong> ${hostel.address}</p>
+                    <p><strong>Pricing:</strong> ${hostel.pricing}</p>
+                    <p><strong>Gender:</strong> ${hostel.gender}</p>
+                    <p><strong>Amenities:</strong> ${hostel.amenities.join(', ')}</p>
+                    <p><strong>Owner:</strong> ${hostel.owner}</p>
+                    <p><strong>Meals:</strong> ${hostel.meals}</p>
+                    <h4>Weekly Menu:</h4>
+                    <ul>
+                        ${Object.entries(weeklyMenu).map(([day, menu]) => `<li><strong>${day}:</strong> ${menu}</li>`).join('')}
+                    </ul>
+                    <p><strong>Directions:</strong> <a href="${hostel.directions}" target="_blank">Open in Google Maps</a></p>
+                    <p><strong>Rules & Regulations:</strong> ${hostel.rules}</p>
+                    <p><strong>Eco Stay Badge:</strong> ${hostel.ecoStay ? 'Yes' : 'No'}</p>
+                    <p><strong>Special Features:</strong> ${hostel.specialFeatures}</p>
+                    <h4>Reviews:</h4>
+                    ${hostel.reviews.map(review => `<p><strong>${review.user}:</strong> ${review.text} (${review.rating} stars)</p>`).join('')}
+                    <h4>Add Review:</h4>
+                    <input type="text" id="reviewUser" placeholder="Your Name">
+                    <textarea id="reviewText" placeholder="Your Review"></textarea>
+                    <input type="number" id="reviewRating" placeholder="Rating (1-5)" min="1" max="5">
+                    <button id="addReviewButton">Submit Review</button>
+                    <h4>Payment:</h4>
+                    <img src="dummy-qr-code.png" alt="Payment QR Code" style="width: 150px; height: 150px;">
+                    <p>Scan to Pay</p>
+                `;
+
+                if (hostel.video) {
+                    modalContent.innerHTML += `
+                        <video class="hostel-video" controls>
+                            <source src="${hostel.video}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    `;
+                }
+
+                modal.style.display = 'block';
+                modalOverlay.style.display = 'block';
+
+                const addReviewButton = document.getElementById('addReviewButton');
+                addReviewButton.onclick = function () {
+                    const user = document.getElementById('reviewUser').value;
+                    const text = document.getElementById('reviewText').value;
+                    const rating = parseInt(document.getElementById('reviewRating').value);
+                    if (user && text && rating >= 1 && rating <= 5) {
+                        hostel.reviews.push({ user, text, rating });
+                        showHostelDetails(hostel);
+                    } else {
+                        alert('Please fill in all fields correctly.');
+                    }
+                };
+            }
+
+            closeBtn.onclick = function () {
+                modal.style.display = 'none';
+                modalOverlay.style.display = 'none';
+            };
+
+            window.onclick = function (event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                    modalOverlay.style.display = 'none';
+                }
+            };
+
+            document.addEventListener('click', (event) => {
+                if (event.target.classList.contains('details-button')) {
+                    const hostelName = event.target.parentElement.querySelector('h3').textContent;
+                    const hostel = hostelData.find(h => h.name === hostelName);
+                    if (hostel) {
+                        showHostelDetails(hostel);
+                    }
+                } else if (event.target.classList.contains('favorite-button')) {
+                    const hostelName = event.target.parentElement.querySelector('h3').textContent;
+                    if (favorites.includes(hostelName)) {
+                        favorites = favorites.filter(name => name !== hostelName);
+                        event.target.textContent = 'Add to Favorites';
+                    } else {
+                        favorites.push(hostelName);
+                        event.target.textContent = 'Remove from Favorites';
+                    }
+                    localStorage.setItem('favorites', JSON.stringify(favorites));
+                }
+            });
+
+            navHomeButton.addEventListener('click', () => {
+                displayHostels('', '', '');
+                hostelResults.style.display = 'flex';
+                hostelResults.style.alignItems = "normal";
+                userOptions.style.display = 'none';
+                citySelection.style.display = 'none';
+                loginContainer.style.display = 'none';
+                welcomeContainer.style.display = 'none';
+                navigationBar.style.display = 'flex';
+            });
+
+            navFavoritesButton.addEventListener('click', () => {
+                displayFavorites();
+                hostelResults.style.display = 'flex';
+                hostelResults.style.alignItems = "normal";
+                userOptions.style.display = 'none';
+                citySelection.style.display = 'none';
+                loginContainer.style.display = 'none';
+                welcomeContainer.style.display = 'none';
+                navigationBar.style.display = 'flex';
+            });
+
+            navBackToCityButton.addEventListener('click', () => {
+                citySelection.style.display = 'flex';
+                hostelResults.style.display = 'none';
+                userOptions.style.display = 'none';
+                loginContainer.style.display = 'none';
+                welcomeContainer.style.display = 'none';
+                navigationBar.style.display = 'none';
+            });
+
+            function displayFavorites() {
+                const favoriteHostels = hostelData.filter(hostel => favorites.includes(hostel.name));
+                hostelList.innerHTML = '';
+                let count = 0;
+
+                favoriteHostels.forEach(hostel => {
+                    if (count >= 5) return;
+
+                    const hostelItem = document.createElement('div');
+                    hostelItem.classList.add('hostel-item');
+                    hostelItem.innerHTML = `
+                        <h3>${hostel.name}</h3>
+                        <img src="${hostel.image || 'placeholder.jpg'}" alt="${hostel.name}">
+                        <p>Address: ${hostel.address}</p>
+                        <p>Pricing: ${hostel.pricing}</p>
+                        <p>Gender: ${hostel.gender}</p>
+                        <p>AC: ${hostel.hasAC ? 'Yes' : 'No'}</p>
+                        <p>Vacancy: ${hostel.vacancy}</p>
+                        <p>Payment Options: ${hostel.paymentOptions.join(', ')}</p>
+                        <a href="${hostel.directions}" target="_blank">Directions</a>
+                        <button class="details-button">Get More Details</button>
+                        <button class="favorite-button">Remove from Favorites</button>
+                    `;
+                    hostelList.appendChild(hostelItem);
+                    count++;
+                });
+            }
+        });
+    </script>
+</body>
+</html>

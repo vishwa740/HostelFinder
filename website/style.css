@@ -1,0 +1,131 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: radial-gradient(circle, #e0f7fa, #b2dfdb); /* Radial gradient with calm tones */
+    color: #333; /* Darker text for readability */
+}
+
+.welcome-container,
+.login-container,
+.city-selection,
+.user-options,
+.hostel-results {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    border-radius: 12px;
+    width: 350px;
+    box-sizing: border-box;
+    background-color: rgba(255, 255, 255, 0.9); /* Light, semi-transparent white */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    border: 1px solid rgba(200, 200, 200, 0.5); /* Light border */
+}
+
+.login-container h2,
+.city-selection h2,
+.user-options h2 {
+    color: #00897b; /* Calming teal heading */
+}
+
+.login-container input,
+.login-container button,
+.city-selection select,
+.user-options select,
+.user-options button {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    border: 1px solid rgba(100, 100, 100, 0.3);
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: #f0f0f0; /* Light gray background */
+    color: #333;
+}
+
+.login-container input:focus,
+.city-selection select:focus,
+.user-options select:focus {
+    border-color: #00897b; /* Teal focus border */
+    outline: none;
+}
+
+.login-container button,
+.city-selection button,
+.user-options button,
+.navigation-bar button {
+    background: linear-gradient(to right, #00897b, #00695c); /* Calming teal button gradient */
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.4s ease, transform 0.2s ease;
+    border-radius: 6px;
+    padding: 14px;
+    font-size: 16px;
+}
+
+.login-container button:hover,
+.city-selection button:hover,
+.user-options button:hover,
+.navigation-bar button:hover {
+    background: linear-gradient(to right, #00695c, #004d40);
+    transform: translateY(-3px);
+}
+
+.navigation-bar {
+    display: none;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.navigation-bar button {
+    margin: 0 15px;
+}
+
+.hostel-item {
+    border: 1px solid rgba(200, 200, 200, 0.5);
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.hostel-item:hover {
+    transform: translateY(-5px);
+}
+
+.hostel-item h3 {
+    color: #00897b;
+}
+
+.hostel-item p,
+.hostel-item a {
+    color: #555;
+}
+
+.hostel-item img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.city-selection select option,
+.user-options select option {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.city-selection select option:hover,
+.user-options select option:hover {
+    background-color: #e0e0e0;
+}
